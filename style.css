@@ -39,7 +39,7 @@ body {
 /* --- LOGO ACCUEIL --- */
 .main-logo-container {
     text-align: center;
-    margin-bottom: 10px; 
+    margin-bottom: 20px; 
     width: 100%;
 }
 
@@ -54,22 +54,25 @@ body {
 /* --- ÉCRANS GLOBAUX --- */
 .screen {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh; /* CORRECTION 1 : Permet à la page de s'agrandir si le contenu dépasse */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
-    overflow: hidden;
+    padding: 20px 0; /* Ajoute un espace de sécurité en haut et en bas au défilement */
 }
 
 #setup-screen {
     background: radial-gradient(circle, #2c3e50 0%, #0f171e 100%);
+    overflow-y: auto; /* CORRECTION 1 : Active le scroll global si la liste des joueurs est longue */
 }
 
 #game-screen {
     background: radial-gradient(circle, var(--table-green-light) 0%, var(--table-green-dark) 100%);
     justify-content: space-between; 
+    height: 100vh; /* Le tapis de jeu reste fixe pour ne pas défiler */
+    overflow: hidden;
 }
 
 /* --- LOGIQUE DE CONFIGURATION --- */
@@ -117,7 +120,7 @@ h1 {
 }
 
 #players-input-container {
-    max-height: 200px;
+    max-height: 280px; /* Augmenté pour voir plus de joueurs à la fois */
     overflow-y: auto;
     margin-bottom: 15px;
     padding-right: 5px;
@@ -342,25 +345,33 @@ header {
 .hand-container {
     display: flex;
     justify-content: center;
-    gap: -15px; 
+    gap: 8px; /* CORRECTION 2 : Plus d'espace négatif qui compresse, on utilise un écart positif propre */
     width: 100%;
-    max-width: 800px;
-    height: calc(var(--card-height) + 10px);
+    max-width: 95%; /* S'étale au maximum pour laisser respirer les cartes */
+    height: calc(var(--card-height) + 15px);
     padding-top: 5px;
+    overflow-x: auto; /* CORRECTION EXTRA : Si la main contient trop de cartes, elles défilent horizontalement au lieu de s'écraser */
+    scrollbar-width: none; /* Cache la barre de défilement sur Firefox */
 }
 
-/* Effet d'éventail naturel et de survol sur tes cartes */
+.hand-container::-webkit-scrollbar {
+    display: none; /* Cache la barre de défilement sur Chrome/Safari pour garder le design propre */
+}
+
+/* Effet au survol des cartes */
 .hand-container .card {
-    transition: transform 0.2s, margin-top 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0; /* Empêche absolument le navigateur de réduire la largeur de tes cartes */
 }
 .hand-container .card:hover {
-    transform: translateY(-20px) scale(1.05);
+    transform: translateY(-15px) scale(1.05);
     box-shadow: 0 10px 20px rgba(0,0,0,0.6);
     z-index: 999 !important;
 }
-/* Recouvrement partiel pour simuler une vraie main */
+
+/* CORRECTION 2 : Suppression complète de l'ancien effet de décalage négatif gauche parasite */
 .hand-container .card:not(:first-child) {
-    margin-left: -20px; 
+    margin-left: 0px; 
 }
 
 /* --- MODAL DE LOGS ET HISTORIQUE (SCORES) --- */
@@ -390,7 +401,6 @@ header {
     border: 2px solid var(--felt-border);
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    
     -webkit-overflow-scrolling: touch; 
 }
 
@@ -452,7 +462,7 @@ th { background-color: #2c3e50; }
    🔒 SYSTÈME DE BLOCAGE ORIENTATION : EXCLUSIF SMARTPHONE PORTRAIT
    ========================================================================== */
 #orientation-warning {
-    display: none; /* Masqué par défaut (PC, tablettes et mode paysage) */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
@@ -460,7 +470,7 @@ th { background-color: #2c3e50; }
     height: 100vh;
     background-color: #111a24;
     color: #ffffff;
-    z-index: 999999; /* Couvre tout le jeu */
+    z-index: 999999; 
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -488,17 +498,14 @@ th { background-color: #2c3e50; }
     line-height: 1.5;
 }
 
-/* Animation de balancement de l'icône de rotation */
 @keyframes rotateDevice {
     0% { transform: rotate(0deg); }
     50% { transform: rotate(-90deg); }
     100% { transform: rotate(0deg); }
 }
 
-/* LA RÈGLE MAGIQUE : S'active uniquement si l'appareil est de petite taille (smartphone < 767px) 
-   ET qu'il est actuellement tenu à la verticale (portrait) */
 @media (max-width: 767px) and (orientation: portrait) {
     #orientation-warning {
-        display: flex; /* Force l'apparition du panneau */
+        display: flex; 
     }
 }
