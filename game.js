@@ -34,6 +34,7 @@ class RikikiGame {
 
         this.initDomElements();
         this.bindEvents();
+        this.initOrientationCheck();
     }
 
     initDomElements() {
@@ -77,6 +78,61 @@ class RikikiGame {
         this.generatePlayerInputs();
     }
 
+    initOrientationCheck() {
+        // Écoute les changements d'orientation globaux via l'API HTML5 Screen Orientation
+        if (window.screen && window.screen.orientation) {
+            window.screen.orientation.addEventListener('change', () => this.handleOrientationChange());
+        } else {
+            // Alternative de secours pour les anciens navigateurs mobiles
+            window.addEventListener('resize', () => this.handleOrientationChange());
+        }
+        // Premier check au chargement initial de l'application
+        this.handleOrientationChange();
+    }
+
+    handleOrientationChange() {
+        // Ciblage exclusif des smartphones : Écran de moins de 768px (largeur ou hauteur selon le sens de rotation)
+        const isSmallScreen = (window.innerWidth < 768 || window.innerHeight < 768);
+        const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+        const isSmartphone = isSmallScreen && isTouchDevice;
+
+        if (!isSmartphone) {
+            // Si c'est un PC ou une Tablette, on s'assure qu'aucun message de blocage ou comportement parasite ne s'applique
+            document.body.classList.remove('force-landscape-warning');
+            return;
+        }
+
+        // Récupération du type d'orientation actuel (gestion des alternatives navigateurs)
+        let orientationType = "";
+        if (window.screen && window.screen.orientation && window.screen.orientation.type) {
+            orientationType = window.screen.orientation.type;
+        } else if (window.orientation !== undefined) {
+            orientationType = (Math.abs(window.orientation) === 90) ? "landscape-primary" : "portrait-primary";
+        } else {
+            orientationType = (window.innerWidth > window.innerHeight) ? "landscape-primary" : "portrait-primary";
+        }
+
+        // Si le smartphone est tenu en Portrait, on applique une classe CSS pour afficher une alerte visuelle propre
+        if (orientationType.includes('portrait')) {
+            document.body.classList.add('force-landscape-warning');
+        } else {
+            document.body.classList.remove('force-landscape-warning');
+            // Si la partie est active et que l'utilisateur vient de pivoter en paysage, on recalcule le rendu du tapis
+            if (this.gameState !== "SETUP") {
+                this.renderOpponentsTable();
+                if (this.trickCards && this.trickCards.length > 0) {
+                    const savedTricks = [...this.trickCards];
+                    if (this.dom.playedCards) this.dom.playedCards.innerHTML = "";
+                    this.trickCards = [];
+                    savedTricks.forEach(play => {
+                        this.trickCards.push(play);
+                        this.renderPlayOnTable(play.card, play.player.name);
+                    });
+                }
+            }
+        }
+    }
+
     generatePlayerInputs() {
         if (!this.dom.playerCountSelect || !this.dom.playersInputContainer) return;
         const count = parseInt(this.dom.playerCountSelect.value, 10);
@@ -96,7 +152,6 @@ class RikikiGame {
     }
 
     setupGame() {
-
         const count = parseInt(this.dom.playerCountSelect.value, 10);
         this.players = [];
 
@@ -115,10 +170,11 @@ class RikikiGame {
         if (this.dom.gameScreen) this.dom.gameScreen.classList.remove('hidden');
 
         this.startNewRound();
+        // Force la réévaluation visuelle de l'orientation pour ajuster le tapis de jeu dès le départ
+        this.handleOrientationChange();
     }
 
     resetToHome() {
-
         // Cache la modal de score au cas où elle est ouverte
         if (this.dom.scoreModal) this.dom.scoreModal.classList.add('hidden');
         
