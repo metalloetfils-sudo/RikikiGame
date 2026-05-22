@@ -126,6 +126,12 @@ class RikikiGame {
     }
 
     resetToHome() {
+
+        // --- LIBÈRE L'ORIENTATION AU RETOUR À L'ACCUEIL ---
+        if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+    }
+        
         // Cache la modal de score au cas où elle est ouverte
         if (this.dom.scoreModal) this.dom.scoreModal.classList.add('hidden');
         
