@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rikiki - Le Jeu Complet</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="setup-screen" class="screen">
+        
+        <div class="main-logo-container">
+            <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki Game Logo" class="main-logo">
+        </div>
+
+        <h1>Configuration</h1>
+        
+        <div class="setup-box">
+            <label for="player-count">Nombre de joueurs (3 à 7) :</label>
+            <select id="player-count">
+                <option value="3" selected>3 Joueurs</option>
+                <option value="4">4 Joueurs</option>
+                <option value="5">5 Joueurs</option>
+                <option value="6">6 Joueurs</option>
+                <option value="7">7 Joueurs</option>
+            </select>
+
+            <div id="players-input-container"></div>
+
+            <button id="start-game-btn">Lancer la partie</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <header class="game-header">
+            <div class="header-logo-container">
+                <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki Game" class="header-logo">
+            </div>
+            <div id="game-header-infos">
+                <div id="info-manche">Manche : <span id="current-round">-</span></div>
+                <div id="info-atout">Atout : <span id="current-trump">-</span></div>
+                <div id="info-statut">En attente...</div>
+            </div>
+            <button id="toggle-score-btn">Scores</button>
+        </header>
+
+        <div id="game-table">
+            <div id="opponents-container"></div>
+            <div id="table-center">
+                <div id="played-cards"></div>
+            </div>
+        </div>
+
+        <div id="bid-action-zone" class="hidden">
+            <p>Faites votre annonce :</p>
+            <div id="bid-buttons"></div>
+        </div>
+
+        <div id="human-player-zone" class="human-player-area">
+            <div id="human-info">
+                <span id="human-name">Bruno</span>
+                <span id="human-status">Annonce : - | Plis : 0</span>
+            </div>
+            <div id="human-hand" class="hand-container"></div>
+        </div>
+    </div>
+
+    <div id="score-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-score-btn" class="close">&times;</span>
+            <h2>Tableau des Scores</h2>
+            <div id="score-table-container"></div>
+        </div>
+    </div>
+
+    <script src="engine.js"></script>
+    <script src="ai.js"></script>
+    <script src="game.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            window.game = new RikikiGame();
+        });
+    </script>
+</body>
+</html>
