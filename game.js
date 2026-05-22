@@ -97,13 +97,7 @@ class RikikiGame {
 
     setupGame() {
 
-        // --- FORCE LE MODE HORIZONTAL SUR MOBILE ---
-        if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('landscape')
-            .catch(function(error) {
-                console.log("Le verrouillage d'orientation a été refusé ou non supporté : ", error);
-            });
-    }
+
         
         const count = parseInt(this.dom.playerCountSelect.value, 10);
         this.players = [];
@@ -127,10 +121,6 @@ class RikikiGame {
 
     resetToHome() {
 
-        // --- LIBÈRE L'ORIENTATION AU RETOUR À L'ACCUEIL ---
-        if (screen.orientation && screen.orientation.unlock) {
-        screen.orientation.unlock();
-    }
         
         // Cache la modal de score au cas où elle est ouverte
         if (this.dom.scoreModal) this.dom.scoreModal.classList.add('hidden');
