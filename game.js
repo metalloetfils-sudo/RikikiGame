@@ -637,3 +637,44 @@ class RikikiGame {
 window.addEventListener('DOMContentLoaded', () => {
     window.game = new RikikiGame();
 });
+function verouillerPaysage UniquementSmartphone() {
+    // 1. Détection stricte du smartphone (Écran court + fonction tactile)
+    const isSmallScreen = (window.innerWidth < 768 || window.innerHeight < 768);
+    const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const isSmartphone = isSmallScreen && isTouchDevice;
+
+    // Si ce n'est pas un smartphone (PC, Mac, grande Tablette), on stoppe immédiatement
+    if (!isSmartphone) {
+        console.log("Appareil non qualifié comme smartphone. Verrouillage ignoré.");
+        return;
+    }
+
+    // 2. Vérification des compatibilités de l'API Screen Orientation
+    if (!screen.orientation || !screen.orientation.lock) {
+        console.warn("L'API de verrouillage d'orientation n'est pas supportée par ce navigateur mobile.");
+        return;
+    }
+
+    // 3. Exécution sécurisée du plein écran puis du verrouillage
+    // Note : Doit obligatoirement être appelé DIRECTEMENT dans l'événement d'un clic utilisateur
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+            .then(() => {
+                screen.orientation.lock('landscape')
+                    .then(() => {
+                        console.log("Écran du smartphone verrouillé en mode paysage avec succès.");
+                    })
+                    .catch((err) => {
+                        console.error("L'API a refusé le verrouillage en paysage : ", err);
+                    });
+            })
+            .catch((err) => {
+                console.error("Le passage en plein écran a échoué (requis pour le verrouillage) : ", err);
+            });
+    } else {
+        // Si l'application est déjà en plein écran, on tente directement le verrouillage
+        screen.orientation.lock('landscape').catch((err) => {
+            console.error("Échec du verrouillage en plein écran direct : ", err);
+        });
+    }
+}
