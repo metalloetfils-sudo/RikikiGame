@@ -96,9 +96,15 @@ class RikikiGame {
     }
 
     setupGame() {
+        // --- APPLIQUE LE PIVOTEMENT UNIQUEMENT SUR SMARTPHONE (< 768px) ---
+        if (window.innerWidth < 768) {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(function(error) {
+                    console.log("Le verrouillage d'orientation auto a été bloqué ou non supporté : ", error);
+                });
+            }
+        }
 
-
-        
         const count = parseInt(this.dom.playerCountSelect.value, 10);
         this.players = [];
 
@@ -120,7 +126,10 @@ class RikikiGame {
     }
 
     resetToHome() {
-
+        // --- LIBÈRE L'ORIENTATION UNIQUEMENT SI ELLE A ÉTÉ VERROUILLÉE ---
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
         
         // Cache la modal de score au cas où elle est ouverte
         if (this.dom.scoreModal) this.dom.scoreModal.classList.add('hidden');
@@ -370,7 +379,7 @@ class RikikiGame {
     }
 
     botPlayCycle() {
-        if (this.gameState !== "PLAYING") return;
+        if (this.gameState !== "PLAYING" && this.gameState !== "BIDDING") return;
         const bot = this.players[this.currentPlayerIndex];
 
         const chosenCard = RikikiAI.chooseCardToPlay(bot.hand, this.trickCards, this.trumpSuit, bot.tricksWon, bot.currentBid);
@@ -387,53 +396,42 @@ class RikikiGame {
     renderPlayOnTable(card, playerName) {
         if (!this.dom.playedCards) return;
 
-        // Configuration pour centrer le conteneur global s'il ne l'est pas en CSS
         this.dom.playedCards.style.position = "relative";
         this.dom.playedCards.style.width = "100%";
         this.dom.playedCards.style.height = "100%";
 
         const visualCard = card.renderHTML(true);
-        
-        // Calcul des positions dynamiques pour la disposition en rosace pro
         const totalPlayers = this.players.length;
         
-        // On récupère l'index du joueur qui vient de poser la carte pour calculer son angle sur le tapis
         const activePlayer = this.players.find(p => p.name === playerName);
         const playerIndex = activePlayer ? activePlayer.id : this.trickCards.length;
 
-        // Calcul de l'angle sur un cercle de 360 degrés divisé par le nombre de joueurs
-        const angle = (playerIndex * (360 / totalPlayers)) - 90; // -90 pour commencer par le haut
+        const angle = (playerIndex * (360 / totalPlayers)) - 90; 
         
-        // Rayon d'écartement par rapport au centre parfait (en pixels)
-        // 25px permet d'écarter légèrement les cartes pour qu'on les voie toutes, tout en restant groupées au centre
         const radius = 25; 
         const offsetX = Math.cos((angle * Math.PI) / 180) * radius;
         const offsetY = Math.sin((angle * Math.PI) / 180) * radius;
         
-        // Inclinaison aléatoire naturelle propre au jeu de cartes (-8° à +8°)
         const cardRotation = ((playerIndex * 29) % 17) - 8;
 
-        // Application des styles en pixel-perfect
         visualCard.style.position = "absolute";
         visualCard.style.left = "50%";
         visualCard.style.top = "50%";
         
-        // Le translate(-50%, -50%) garantit le centrage brut, la rotation et l'offset s'appliquent par-dessus
         visualCard.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${cardRotation}deg)`;
-        visualCard.style.zIndex = this.trickCards.length; // La dernière carte jouée va au-dessus des autres
-        visualCard.style.margin = "0"; // Élimine les décalages parasites des marges CSS
+        visualCard.style.zIndex = this.trickCards.length; 
+        visualCard.style.margin = "0"; 
         visualCard.style.transition = "all 0.2s ease-out";
 
-        // Création du badge de nom pro, discret et lisible
         const nameLabel = document.createElement('div');
         nameLabel.textContent = playerName;
         nameLabel.style.position = "absolute";
-        nameLabel.style.bottom = "-20px"; // Placé juste sous la carte
+        nameLabel.style.bottom = "-20px"; 
         nameLabel.style.left = "50%";
         nameLabel.style.transform = "translateX(-50%)";
-        nameLabel.style.background = "rgba(18, 24, 32, 0.85)"; // Look sombre premium
+        nameLabel.style.background = "rgba(18, 24, 32, 0.85)"; 
         nameLabel.style.color = "#ffffff";
-        nameLabel.style.border = "1px solid rgba(212, 175, 55, 0.4)"; // Petit liseré doré subtil
+        nameLabel.style.border = "1px solid rgba(212, 175, 55, 0.4)"; 
         nameLabel.style.padding = "2px 7px";
         nameLabel.style.borderRadius = "4px";
         nameLabel.style.fontSize = "11px";
@@ -445,7 +443,6 @@ class RikikiGame {
         visualCard.appendChild(nameLabel);
         this.dom.playedCards.appendChild(visualCard);
 
-        // Envoi des infos dans le bandeau de statut textuel supérieur
         let valeurAffichee = (typeof card.getValueLabel === "function") ? card.getValueLabel() : card.value;
         let couleurAffichee = (typeof card.getSuitName === "function") ? card.getSuitName() : card.suit;
         if (this.dom.infoStatut) this.dom.infoStatut.textContent = `${playerName} a joué : ${valeurAffichee} de ${couleurAffichee}`;
@@ -537,17 +534,15 @@ class RikikiGame {
         });
         html += `</tbody></table>`;
         
-        // CONFIGURATION DES BOUTONS DE FIN DE LOGIQUE
         if (showNextRoundButton) {
             html += `
                 <div style="text-align: center; margin-top: 25px;">
-                    <button id="next-round-action-btn" class="bid-btn" style="width: auto; padding: 12px 30px; font-size: 16px; cursor: pointer;">
+                    <button id=\"next-round-action-btn\" class=\"bid-btn\" style=\"width: auto; padding: 12px 30px; font-size: 16px; cursor: pointer;\">
                         Passer à la manche suivante ➔
                     </button>
                 </div>
             `;
         } else {
-            // CORRECTION : AJOUT DU BOUTON RETOUR À L'ACCUEIL QUAND LA PARTIE EST FINIE (GAME_OVER)
             html += `
                 <div style="text-align: center; margin-top: 25px;">
                     <button id="home-return-btn" class="bid-btn" style="width: auto; padding: 12px 30px; font-size: 16px; background-color: #2980b9; color: white; border: 1px solid #3498db; cursor: pointer;">
@@ -559,7 +554,6 @@ class RikikiGame {
 
         this.dom.scoreTableContainer.innerHTML = html;
 
-        // Attachement des événements dynamiques selon le bouton injecté
         if (showNextRoundButton) {
             const nextBtn = document.getElementById('next-round-action-btn');
             if (nextBtn) {
