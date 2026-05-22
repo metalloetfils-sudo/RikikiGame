@@ -96,11 +96,21 @@ class RikikiGame {
     }
 
     setupGame() {
-        // --- APPLIQUE LE PIVOTEMENT UNIQUEMENT SUR SMARTPHONE (< 768px) ---
-        if (window.innerWidth < 768) {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(function(error) {
-                    console.log("Le verrouillage d'orientation auto a été bloqué ou non supporté : ", error);
+        // --- LOGIQUE DE ROTATION ROBUSTE POUR SMARTPHONE (ANDROID/SAMSUNG) ---
+        if (window.innerWidth < 992) {
+            const docEl = document.documentElement;
+            // Étape 1 : Demande le plein écran (requis par Android pour verrouiller l'orientation)
+            const requestFullscreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
+            if (requestFullscreen) {
+                requestFullscreen.call(docEl).then(() => {
+                    // Étape 2 : Une fois en plein écran, on force le mode paysage
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(function(err) {
+                            console.log("Le verrouillage d'orientation a échoué : ", err);
+                        });
+                    }
+                }).catch(err => {
+                    console.log("Le mode plein écran a été refusé : ", err);
                 });
             }
         }
@@ -126,22 +136,25 @@ class RikikiGame {
     }
 
     resetToHome() {
-        // --- LIBÈRE L'ORIENTATION UNIQUEMENT SI ELLE A ÉTÉ VERROUILLÉE ---
+        // Quitte le mode plein écran proprement s'il est actif
+        const exitFullscreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        if (exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen().catch(err => console.log(err));
+        }
+
+        // Libère le verrouillage de l'orientation
         if (screen.orientation && screen.orientation.unlock) {
             screen.orientation.unlock();
         }
         
-        // Cache la modal de score au cas où elle est ouverte
         if (this.dom.scoreModal) this.dom.scoreModal.classList.add('hidden');
         
-        // Nettoyage de l'état du jeu
         this.players = [];
         this.trickCards = [];
         this.currentRoundIndex = 0;
         if (this.dom.playedCards) this.dom.playedCards.innerHTML = "";
         if (this.dom.humanHand) this.dom.humanHand.innerHTML = "";
         
-        // Écrans
         if (this.dom.gameScreen) this.dom.gameScreen.classList.add('hidden');
         if (this.dom.setupScreen) this.dom.setupScreen.classList.remove('hidden');
         
@@ -193,11 +206,9 @@ class RikikiGame {
         const totalRounds = this.roundsSequence.length;
         const remainingRounds = totalRounds - (this.currentRoundIndex + 1);
         
-        let roundText = `${this.currentRoundIndex + 1} / ${totalRounds} (${cardCount} c. `;
+        let roundText = `Manche ${this.currentRoundIndex + 1}/${totalRounds} (${cardCount} c.)`;
         if (remainingRounds === 0) {
-            roundText += "- Dernier match !)";
-        } else {
-            roundText += `- ${remainingRounds} restante${remainingRounds > 1 ? 's' : ''})`;
+            roundText = `Dernière Manche (${cardCount} c.)`;
         }
         if (this.dom.currentRound) this.dom.currentRound.textContent = roundText;
 
@@ -272,10 +283,9 @@ class RikikiGame {
                 miniCardsHtml += `<div class="opponent-mini-card"></div>`;
             }
 
-            // AJOUT DU SCORE ICI DANS LA CASE DU BOT
             slot.innerHTML = `
                 <div class="opponent-name">${opp.name} ${this.dealerIndex === opp.id ? '🪙' : ''}</div>
-                <div class="opponent-score" style="color: #f1c40f; font-weight: bold; font-size: 0.85rem; margin: 2px 0;">Score : ${opp.totalScore} pts</div>
+                <div class="opponent-score">Score : ${opp.totalScore} pts</div>
                 <div class="opponent-status">Annonce : ${bidText} | Plis : ${opp.tricksWon}</div>
                 <div class="opponent-cards-artificiel">${miniCardsHtml}</div>
             `;
@@ -310,7 +320,6 @@ class RikikiGame {
             this.dom.humanHand.appendChild(cardEl);
         });
 
-        // AJOUT DU SCORE ICI DANS TA BARRE DE STATUT (HUMAIN)
         const human = this.players[0];
         const bidText = human.currentBid === -1 ? "?" : human.currentBid;
         if (this.dom.humanStatus) {
@@ -418,7 +427,7 @@ class RikikiGame {
         visualCard.style.left = "50%";
         visualCard.style.top = "50%";
         
-        visualCard.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${cardRotation}deg)`;
+        visualCard.style.transform = `translate(calc(-50% + ${offsetX}px), translate(-50% + ${offsetY}px)) rotate(${cardRotation}deg)`;
         visualCard.style.zIndex = this.trickCards.length; 
         visualCard.style.margin = "0"; 
         visualCard.style.transition = "all 0.2s ease-out";
@@ -537,7 +546,7 @@ class RikikiGame {
         if (showNextRoundButton) {
             html += `
                 <div style="text-align: center; margin-top: 25px;">
-                    <button id=\"next-round-action-btn\" class=\"bid-btn\" style=\"width: auto; padding: 12px 30px; font-size: 16px; cursor: pointer;\">
+                    <button id="next-round-action-btn" class="bid-btn" style="width: auto; padding: 12px 30px; font-size: 16px; cursor: pointer;">
                         Passer à la manche suivante ➔
                     </button>
                 </div>
@@ -574,7 +583,6 @@ class RikikiGame {
     }
 }
 
-// Initialisation globale
 window.addEventListener('DOMContentLoaded', () => {
     window.game = new RikikiGame();
 });
