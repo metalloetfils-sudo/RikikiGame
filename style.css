@@ -15,8 +15,8 @@
     --table-green-light: #1a5e3a;
     --table-green-dark: #0d3b24;
     --felt-border: #d4af37;
-    --card-width: 80px;
-    --card-height: 120px;
+    --card-width: 75px;
+    --card-height: 112px;
     --text-light: #ffffff;
     --text-red: #e53935;
     --text-black: #212121;
@@ -39,12 +39,12 @@ body {
 /* --- LOGO ACCUEIL --- */
 .main-logo-container {
     text-align: center;
-    margin-bottom: 20px; 
+    margin-bottom: 15px; 
     width: 100%;
 }
 
 .main-logo {
-    max-width: 280px; 
+    max-width: 250px; 
     width: 100%;
     height: auto;
     object-fit: contain;
@@ -54,34 +54,37 @@ body {
 /* --- ÉCRANS GLOBAUX --- */
 .screen {
     width: 100vw;
-    min-height: 100vh; /* CORRECTION 1 : Permet à la page de s'agrandir si le contenu dépasse */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
-    padding: 20px 0; /* Ajoute un espace de sécurité en haut et en bas au défilement */
 }
 
+/* CORRECTION ACCUEIL : Hauteur libre, défilement parfait et fluide sans blocage */
 #setup-screen {
     background: radial-gradient(circle, #2c3e50 0%, #0f171e 100%);
-    overflow-y: auto; /* CORRECTION 1 : Active le scroll global si la liste des joueurs est longue */
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding: 30px 0;
 }
 
 #game-screen {
     background: radial-gradient(circle, var(--table-green-light) 0%, var(--table-green-dark) 100%);
     justify-content: space-between; 
-    height: 100vh; /* Le tapis de jeu reste fixe pour ne pas défiler */
+    height: 100vh; 
     overflow: hidden;
 }
 
 /* --- LOGIQUE DE CONFIGURATION --- */
 h1 {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     font-weight: 300;
     letter-spacing: 2px;
     text-transform: uppercase;
     text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 1.8rem;
 }
 
 .setup-box {
@@ -112,7 +115,6 @@ h1 {
     border-radius: 8px;
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.2s;
 }
 
 .setup-box select:focus, .setup-box input:focus {
@@ -120,15 +122,8 @@ h1 {
 }
 
 #players-input-container {
-    max-height: 280px; /* Augmenté pour voir plus de joueurs à la fois */
-    overflow-y: auto;
     margin-bottom: 15px;
-    padding-right: 5px;
 }
-
-/* Barre de défilement custom */
-#players-input-container::-webkit-scrollbar { width: 6px; }
-#players-input-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
 
 #start-game-btn {
     width: 100%;
@@ -141,49 +136,53 @@ h1 {
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(212,175,55,0.3);
-    transition: transform 0.1s, box-shadow 0.2s;
 }
 
-#start-game-btn:active {
-    transform: scale(0.98);
-}
-
-/* --- HUD DU TAPIS DE JEU (HEADER) --- */
+/* --- CORRECTION : BARRE D'INFOS ÉTALÉE ET OCCUPÉE --- */
 header {
     width: 100%;
-    padding: 10px 20px;
-    background: rgba(0,0,0,0.5);
+    padding: 8px 30px;
+    background: rgba(0,0,0,0.65);
     border-bottom: 1px solid var(--felt-border);
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; /* 3 compartiments parfaits */
     align-items: center;
     z-index: 10;
 }
 
-#round-branding-zone {
+.header-left {
     display: flex;
-    gap: 30px;
-    font-size: 0.95rem;
+    justify-content: flex-start;
+}
+.header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+}
+.header-right {
+    display: flex;
+    justify-content: flex-end;
 }
 
-#current-round { font-weight: bold; color: var(--felt-border); }
-#info-atout { color: #fff; }
-#info-statut { color: #2ecc71; font-style: italic; }
+#current-round { 
+    font-weight: bold; 
+    color: var(--felt-border); 
+    font-size: 1.05rem;
+    text-transform: uppercase;
+}
+#info-atout { color: #fff; font-size: 0.95rem; }
+#info-statut { color: #2ecc71; font-style: italic; font-size: 0.85rem; }
 
 #toggle-score-btn {
-    padding: 6px 15px;
+    padding: 6px 18px;
     background: transparent;
     border: 1px solid var(--felt-border);
     color: var(--felt-border);
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    transition: all 0.2s;
-}
-
-#toggle-score-btn:hover {
-    background: var(--felt-border);
-    color: #121212;
 }
 
 /* --- SURFACE DU TAPIS DE JEU --- */
@@ -202,19 +201,17 @@ header {
     pointer-events: none; 
 }
 
-/* Slots circulaires des Robots */
 .opponent-slot {
     position: absolute;
     background: rgba(18, 24, 32, 0.85);
     border: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 14px;
-    border-radius: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
     color: #fff;
     min-width: 130px;
     text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
     transform: translate(-50%, -50%);
-    transition: box-shadow 0.3s, border-color 0.3s;
 }
 
 .active-turn {
@@ -222,23 +219,22 @@ header {
     box-shadow: 0 0 15px #3498db !important;
 }
 
-.opponent-name { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px;}
-.opponent-status { font-size: 0.8rem; color: #b3b3b3; }
+.opponent-name { font-weight: bold; font-size: 0.85rem; margin-bottom: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.opponent-score { color: #f1c40f; font-weight: bold; font-size: 0.8rem; }
+.opponent-status { font-size: 0.75rem; color: #b3b3b3; }
 
-/* Visualisation graphique des cartes en main des robots */
 .opponent-cards-artificiel {
     display: flex;
     justify-content: center;
     gap: 2px;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 .opponent-mini-card {
-    width: 10px;
-    height: 15px;
+    width: 8px;
+    height: 12px;
     background-color: #c0392b;
     border: 1px solid #fff;
-    border-radius: 2px;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    border-radius: 1px;
 }
 
 #table-center {
@@ -246,8 +242,8 @@ header {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
 }
 
 #played-cards {
@@ -256,86 +252,70 @@ header {
     position: relative;
 }
 
-/* --- MODULE D'ANNONCES (POPUP INFERIEUR) --- */
+/* --- MODULE D'ANNONCES --- */
 #bid-action-zone {
     position: absolute;
-    bottom: 160px; 
+    bottom: 115px; 
     left: 50%;
     transform: translateX(-50%);
     background: rgba(18, 24, 32, 0.95);
     border: 2px solid var(--felt-border);
-    padding: 15px 25px;
-    border-radius: 14px;
+    padding: 10px 20px;
+    border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     z-index: 100;
     text-align: center;
 }
 
-#bid-action-zone p {
-    margin-bottom: 12px;
-    font-weight: bold;
-    color: var(--felt-border);
-}
-
-#bid-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-    max-width: 400px;
-}
+#bid-action-zone p { margin-bottom: 8px; font-weight: bold; color: var(--felt-border); font-size: 0.9rem; }
+#bid-buttons { display: flex; gap: 6px; justify-content: center; }
 
 .bid-btn {
     background: #2c3e50;
     border: 1px solid #34495e;
     color: #fff;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
-    transition: background 0.1s;
 }
-
-.bid-btn:hover { background: #34495e; border-color: var(--felt-border); }
 
 /* --- COMPOSANT VISUEL D'UNE CARTE --- */
 .card {
     width: var(--card-width);
     height: var(--card-height);
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
     background-color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
 }
 
 .card img {
     width: 100%;
     height: 100%;
     object-fit: fill; 
-    display: block;
 }
 
-/* --- ZONE DU JOUEUR HUMAIN (EN BAS) --- */
+/* --- CORRECTION CARTES : AFFICHAGE TOTAL ET ENTIER --- */
 .human-player-area {
     width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 100%);
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding: 5px 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     z-index: 5;
-    transition: box-shadow 0.3s;
+    height: auto;
 }
 
 #human-info {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     display: flex;
     gap: 20px;
 }
@@ -345,36 +325,43 @@ header {
 .hand-container {
     display: flex;
     justify-content: center;
-    gap: 8px; /* CORRECTION 2 : Plus d'espace négatif qui compresse, on utilise un écart positif propre */
+    gap: 6px; 
     width: 100%;
-    max-width: 95%; /* S'étale au maximum pour laisser respirer les cartes */
-    height: calc(var(--card-height) + 15px);
-    padding-top: 5px;
-    overflow-x: auto; /* CORRECTION EXTRA : Si la main contient trop de cartes, elles défilent horizontalement au lieu de s'écraser */
-    scrollbar-width: none; /* Cache la barre de défilement sur Firefox */
+    max-width: 98%; 
+    height: calc(var(--card-height) + 10px); /* Hauteur calée strictement sur la carte */
+    padding: 4px 0;
 }
 
-.hand-container::-webkit-scrollbar {
-    display: none; /* Cache la barre de défilement sur Chrome/Safari pour garder le design propre */
-}
-
-/* Effet au survol des cartes */
 .hand-container .card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    flex-shrink: 0; /* Empêche absolument le navigateur de réduire la largeur de tes cartes */
+    transition: transform 0.15s;
+    flex-shrink: 0; 
 }
+
 .hand-container .card:hover {
-    transform: translateY(-15px) scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+    transform: translateY(-12px);
     z-index: 999 !important;
 }
 
-/* CORRECTION 2 : Suppression complète de l'ancien effet de décalage négatif gauche parasite */
-.hand-container .card:not(:first-child) {
-    margin-left: 0px; 
+/* --- SMARTPHONES EN HORIZONTAL (ADAPTATION TAILLE CARTE) --- */
+@media (max-height: 500px) {
+    :root {
+        --card-height: 22vh; /* La carte fait exactement 22% de la hauteur totale de l'écran mobile */
+        --card-width: calc(22vh * 0.66); /* Conserve le ratio parfait des cartes belges */
+    }
+    .human-player-area {
+        padding: 3px 10px;
+    }
+    .opponent-slot {
+        padding: 5px 8px;
+        min-width: 110px;
+    }
+    #table-center {
+        width: 120px;
+        height: 120px;
+    }
 }
 
-/* --- MODAL DE LOGS ET HISTORIQUE (SCORES) --- */
+/* --- MODAL DE SCORES --- */
 .modal {
     position: fixed;
     top: 0;
@@ -392,74 +379,27 @@ header {
 .modal-content {
     background: #1e272e;
     color: #fff;
-    padding: 25px;
+    padding: 20px;
     border-radius: 12px;
-    width: 90%;
-    max-width: 650px;
-    max-height: 85vh;
+    width: 85%;
+    max-width: 550px;
+    max-height: 90vh;
     overflow-y: auto; 
     border: 2px solid var(--felt-border);
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    -webkit-overflow-scrolling: touch; 
 }
 
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    margin-bottom: 20px; 
-}
-
-th, td {
-    border: 1px solid #34495e;
-    padding: 8px;
-    text-align: center;
-}
-
+.close { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #34495e; padding: 6px; text-align: center; font-size: 0.85rem; }
 th { background-color: #2c3e50; }
 .current-row-highlight { background-color: rgba(241, 196, 15, 0.2); }
 
 .trump-red { color: #ff0000 !important; font-weight: bold; }
 .trump-black { color: #ffffff !important; font-weight: bold; }
 
-/* --- BRANDING COPYRIGHTS --- */
-.app-copyright {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.4);
-    font-size: 10px;
-    margin-top: 20px;
-    line-height: 1.5;
-}
-.app-copyright a { color: #555; text-decoration: none; }
-
-.table-copyright {
-    position: absolute;
-    right: -110px;
-    top: 50%;
-    transform: translateY(-50%);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    color: rgba(255, 255, 255, 0.04);
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    pointer-events: none;
-    user-select: none;
-}
-
 
 /* ==========================================================================
-   🔒 SYSTÈME DE BLOCAGE ORIENTATION : EXCLUSIF SMARTPHONE PORTRAIT
+   🔒 SYSTÈME DE BLOCAGE ORIENTATION
    ========================================================================== */
 #orientation-warning {
     display: none; 
@@ -479,23 +419,9 @@ th { background-color: #2c3e50; }
 }
 
 #orientation-warning .warning-icon {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
+    font-size: 3rem;
+    margin-bottom: 15px;
     animation: rotateDevice 2s infinite ease-in-out;
-}
-
-#orientation-warning h2 {
-    font-size: 1.4rem;
-    margin-bottom: 10px;
-    color: var(--felt-border);
-    text-transform: uppercase;
-}
-
-#orientation-warning p {
-    color: #a4b0be;
-    font-size: 0.95rem;
-    max-width: 320px;
-    line-height: 1.5;
 }
 
 @keyframes rotateDevice {
@@ -504,7 +430,7 @@ th { background-color: #2c3e50; }
     100% { transform: rotate(0deg); }
 }
 
-@media (max-width: 767px) and (orientation: portrait) {
+@media (max-width: 991px) and (orientation: portrait) {
     #orientation-warning {
         display: flex; 
     }
