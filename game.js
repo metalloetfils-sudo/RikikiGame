@@ -1,5 +1,5 @@
 /**
- * Rikiki - Gestionnaire Principal de Partie (game.js) - Version Améliorée
+ * Rikiki - Gestionnaire Principal de Partie (game.js) - Version Améliorée avec Verrouillage
  * Orchestre les joueurs, les manches, le tour par tour et les mises à jour visuelles.
  */
 
@@ -91,18 +91,17 @@ class RikikiGame {
     }
 
     handleOrientationChange() {
-        // Ciblage exclusif des smartphones : Écran de moins de 768px (largeur ou hauteur selon le sens de rotation)
+        // Ciblage exclusif des smartphones : Écran court + fonction tactile
         const isSmallScreen = (window.innerWidth < 768 || window.innerHeight < 768);
         const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
         const isSmartphone = isSmallScreen && isTouchDevice;
 
         if (!isSmartphone) {
-            // Si c'est un PC ou une Tablette, on s'assure qu'aucun message de blocage ou comportement parasite ne s'applique
             document.body.classList.remove('force-landscape-warning');
             return;
         }
 
-        // Récupération du type d'orientation actuel (gestion des alternatives navigateurs)
+        // Récupération du type d'orientation actuel
         let orientationType = "";
         if (window.screen && window.screen.orientation && window.screen.orientation.type) {
             orientationType = window.screen.orientation.type;
@@ -112,12 +111,12 @@ class RikikiGame {
             orientationType = (window.innerWidth > window.innerHeight) ? "landscape-primary" : "portrait-primary";
         }
 
-        // Si le smartphone est tenu en Portrait, on applique une classe CSS pour afficher une alerte visuelle propre
+        // Si le smartphone est tenu en Portrait, on applique le calque CSS d'avertissement
         if (orientationType.includes('portrait')) {
             document.body.classList.add('force-landscape-warning');
         } else {
             document.body.classList.remove('force-landscape-warning');
-            // Si la partie est active et que l'utilisateur vient de pivoter en paysage, on recalcule le rendu du tapis
+            // Redessine le tapis si nécessaire
             if (this.gameState !== "SETUP") {
                 this.renderOpponentsTable();
                 if (this.trickCards && this.trickCards.length > 0) {
@@ -130,6 +129,46 @@ class RikikiGame {
                     });
                 }
             }
+        }
+    }
+
+    verouillerPaysageUniquementSmartphone() {
+        // 1. Détection stricte du smartphone (Écran court + fonction tactile)
+        const isSmallScreen = (window.innerWidth < 768 || window.innerHeight < 768);
+        const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+        const isSmartphone = isSmallScreen && isTouchDevice;
+
+        // Si ce n'est pas un smartphone (PC, Mac, grande Tablette), on stoppe immédiatement
+        if (!isSmartphone) {
+            console.log("Appareil non qualifié comme smartphone. Verrouillage automatique ignoré.");
+            return;
+        }
+
+        // 2. Vérification des compatibilités de l'API Screen Orientation
+        if (!screen.orientation || !screen.orientation.lock) {
+            console.warn("L'API de verrouillage d'orientation n'est pas pleinement supportée par ce navigateur.");
+            return;
+        }
+
+        // 3. Exécution sécurisée du plein écran puis du verrouillage
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen()
+                .then(() => {
+                    screen.orientation.lock('landscape')
+                        .then(() => {
+                            console.log("Écran du smartphone verrouillé en mode paysage avec succès.");
+                        })
+                        .catch((err) => {
+                            console.error("L'API a refusé le verrouillage en paysage : ", err);
+                        });
+                })
+                .catch((err) => {
+                    console.error("Le passage en plein écran a échoué (requis pour le verrouillage) : ", err);
+                });
+        } else {
+            screen.orientation.lock('landscape').catch((err) => {
+                console.error("Échec du verrouillage en plein écran direct : ", err);
+            });
         }
     }
 
@@ -152,6 +191,9 @@ class RikikiGame {
     }
 
     setupGame() {
+        // Appel du verrouillage au clic (ne s'exécutera que sur mobile)
+        this.verouillerPaysageUniquementSmartphone();
+
         const count = parseInt(this.dom.playerCountSelect.value, 10);
         this.players = [];
 
@@ -170,22 +212,22 @@ class RikikiGame {
         if (this.dom.gameScreen) this.dom.gameScreen.classList.remove('hidden');
 
         this.startNewRound();
-        // Force la réévaluation visuelle de l'orientation pour ajuster le tapis de jeu dès le départ
         this.handleOrientationChange();
     }
 
     resetToHome() {
-        // Cache la modal de score au cas où elle est ouverte
         if (this.dom.scoreModal) this.dom.scoreModal.classList.add('hidden');
-        
-        // Nettoyage de l'état du jeu
         this.players = [];
         this.trickCards = [];
         this.currentRoundIndex = 0;
         if (this.dom.playedCards) this.dom.playedCards.innerHTML = "";
         if (this.dom.humanHand) this.dom.humanHand.innerHTML = "";
         
-        // Écrans
+        // Quitte le plein écran si on revient à l'accueil
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+        
         if (this.dom.gameScreen) this.dom.gameScreen.classList.add('hidden');
         if (this.dom.setupScreen) this.dom.setupScreen.classList.remove('hidden');
         
@@ -316,7 +358,6 @@ class RikikiGame {
                 miniCardsHtml += `<div class="opponent-mini-card"></div>`;
             }
 
-            // AJOUT DU SCORE ICI DANS LA CASE DU BOT
             slot.innerHTML = `
                 <div class="opponent-name">${opp.name} ${this.dealerIndex === opp.id ? '🪙' : ''}</div>
                 <div class="opponent-score" style="color: #f1c40f; font-weight: bold; font-size: 0.85rem; margin: 2px 0;">Score : ${opp.totalScore} pts</div>
@@ -354,7 +395,6 @@ class RikikiGame {
             this.dom.humanHand.appendChild(cardEl);
         });
 
-        // AJOUT DU SCORE ICI DANS TA BARRE DE STATUT (HUMAIN)
         const human = this.players[0];
         const bidText = human.currentBid === -1 ? "?" : human.currentBid;
         if (this.dom.humanStatus) {
@@ -440,53 +480,40 @@ class RikikiGame {
     renderPlayOnTable(card, playerName) {
         if (!this.dom.playedCards) return;
 
-        // Configuration pour centrer le conteneur global s'il ne l'est pas en CSS
         this.dom.playedCards.style.position = "relative";
         this.dom.playedCards.style.width = "100%";
         this.dom.playedCards.style.height = "100%";
 
         const visualCard = card.renderHTML(true);
-        
-        // Calcul des positions dynamiques pour la disposition en rosace pro
         const totalPlayers = this.players.length;
         
-        // On récupère l'index du joueur qui vient de poser la carte pour calculer son angle sur le tapis
         const activePlayer = this.players.find(p => p.name === playerName);
         const playerIndex = activePlayer ? activePlayer.id : this.trickCards.length;
 
-        // Calcul de l'angle sur un cercle de 360 degrés divisé par le nombre de joueurs
-        const angle = (playerIndex * (360 / totalPlayers)) - 90; // -90 pour commencer par le haut
-        
-        // Rayon d'écartement par rapport au centre parfait (en pixels)
-        // 25px permet d'écarter légèrement les cartes pour qu'on les voie toutes, tout en restant groupées au centre
+        const angle = (playerIndex * (360 / totalPlayers)) - 90;
         const radius = 25; 
         const offsetX = Math.cos((angle * Math.PI) / 180) * radius;
         const offsetY = Math.sin((angle * Math.PI) / 180) * radius;
         
-        // Inclinaison aléatoire naturelle propre au jeu de cartes (-8° à +8°)
         const cardRotation = ((playerIndex * 29) % 17) - 8;
 
-        // Application des styles en pixel-perfect
         visualCard.style.position = "absolute";
         visualCard.style.left = "50%";
         visualCard.style.top = "50%";
-        
-        // Le translate(-50%, -50%) garantit le centrage brut, la rotation et l'offset s'appliquent par-dessus
         visualCard.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${cardRotation}deg)`;
-        visualCard.style.zIndex = this.trickCards.length; // La dernière carte jouée va au-dessus des autres
-        visualCard.style.margin = "0"; // Élimine les décalages parasites des marges CSS
+        visualCard.style.zIndex = this.trickCards.length;
+        visualCard.style.margin = "0";
         visualCard.style.transition = "all 0.2s ease-out";
 
-        // Création du badge de nom pro, discret et lisible
         const nameLabel = document.createElement('div');
         nameLabel.textContent = playerName;
         nameLabel.style.position = "absolute";
-        nameLabel.style.bottom = "-20px"; // Placé juste sous la carte
+        nameLabel.style.bottom = "-20px";
         nameLabel.style.left = "50%";
         nameLabel.style.transform = "translateX(-50%)";
-        nameLabel.style.background = "rgba(18, 24, 32, 0.85)"; // Look sombre premium
+        nameLabel.style.background = "rgba(18, 24, 32, 0.85)";
         nameLabel.style.color = "#ffffff";
-        nameLabel.style.border = "1px solid rgba(212, 175, 55, 0.4)"; // Petit liseré doré subtil
+        nameLabel.style.border = "1px solid rgba(212, 175, 55, 0.4)";
         nameLabel.style.padding = "2px 7px";
         nameLabel.style.borderRadius = "4px";
         nameLabel.style.fontSize = "11px";
@@ -498,7 +525,6 @@ class RikikiGame {
         visualCard.appendChild(nameLabel);
         this.dom.playedCards.appendChild(visualCard);
 
-        // Envoi des infos dans le bandeau de statut textuel supérieur
         let valeurAffichee = (typeof card.getValueLabel === "function") ? card.getValueLabel() : card.value;
         let couleurAffichee = (typeof card.getSuitName === "function") ? card.getSuitName() : card.suit;
         if (this.dom.infoStatut) this.dom.infoStatut.textContent = `${playerName} a joué : ${valeurAffichee} de ${couleurAffichee}`;
@@ -590,7 +616,6 @@ class RikikiGame {
         });
         html += `</tbody></table>`;
         
-        // CONFIGURATION DES BOUTONS DE FIN DE LOGIQUE
         if (showNextRoundButton) {
             html += `
                 <div style="text-align: center; margin-top: 25px;">
@@ -600,7 +625,6 @@ class RikikiGame {
                 </div>
             `;
         } else {
-            // CORRECTION : AJOUT DU BOUTON RETOUR À L'ACCUEIL QUAND LA PARTIE EST FINIE (GAME_OVER)
             html += `
                 <div style="text-align: center; margin-top: 25px;">
                     <button id="home-return-btn" class="bid-btn" style="width: auto; padding: 12px 30px; font-size: 16px; background-color: #2980b9; color: white; border: 1px solid #3498db; cursor: pointer;">
@@ -612,7 +636,6 @@ class RikikiGame {
 
         this.dom.scoreTableContainer.innerHTML = html;
 
-        // Attachement des événements dynamiques selon le bouton injecté
         if (showNextRoundButton) {
             const nextBtn = document.getElementById('next-round-action-btn');
             if (nextBtn) {
@@ -630,51 +653,5 @@ class RikikiGame {
                 });
             }
         }
-    }
-}
-
-// Initialisation globale
-window.addEventListener('DOMContentLoaded', () => {
-    window.game = new RikikiGame();
-});
-function verouillerPaysage UniquementSmartphone() {
-    // 1. Détection stricte du smartphone (Écran court + fonction tactile)
-    const isSmallScreen = (window.innerWidth < 768 || window.innerHeight < 768);
-    const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    const isSmartphone = isSmallScreen && isTouchDevice;
-
-    // Si ce n'est pas un smartphone (PC, Mac, grande Tablette), on stoppe immédiatement
-    if (!isSmartphone) {
-        console.log("Appareil non qualifié comme smartphone. Verrouillage ignoré.");
-        return;
-    }
-
-    // 2. Vérification des compatibilités de l'API Screen Orientation
-    if (!screen.orientation || !screen.orientation.lock) {
-        console.warn("L'API de verrouillage d'orientation n'est pas supportée par ce navigateur mobile.");
-        return;
-    }
-
-    // 3. Exécution sécurisée du plein écran puis du verrouillage
-    // Note : Doit obligatoirement être appelé DIRECTEMENT dans l'événement d'un clic utilisateur
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
-            .then(() => {
-                screen.orientation.lock('landscape')
-                    .then(() => {
-                        console.log("Écran du smartphone verrouillé en mode paysage avec succès.");
-                    })
-                    .catch((err) => {
-                        console.error("L'API a refusé le verrouillage en paysage : ", err);
-                    });
-            })
-            .catch((err) => {
-                console.error("Le passage en plein écran a échoué (requis pour le verrouillage) : ", err);
-            });
-    } else {
-        // Si l'application est déjà en plein écran, on tente directement le verrouillage
-        screen.orientation.lock('landscape').catch((err) => {
-            console.error("Échec du verrouillage en plein écran direct : ", err);
-        });
     }
 }
