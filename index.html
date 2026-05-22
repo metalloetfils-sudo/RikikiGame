@@ -9,6 +9,7 @@
 <body>
 
     <div id="setup-screen" class="screen">
+        
         <div class="main-logo-container">
             <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki Game Logo" class="main-logo">
         </div>
@@ -32,17 +33,16 @@
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <header>
-            <div class="header-left">
-                <div id="current-round">Manche 1</div>
+        <header class="game-header">
+            <div class="header-logo-container">
+                <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki Game" class="header-logo">
             </div>
-            <div class="header-center">
+            <div id="game-header-infos">
+                <div id="info-manche">Manche : <span id="current-round">-</span></div>
                 <div id="info-atout">Atout : <span id="current-trump">-</span></div>
                 <div id="info-statut">En attente...</div>
             </div>
-            <div class="header-right">
-                <button id="toggle-score-btn">Scores</button>
-            </div>
+            <button id="toggle-score-btn">Scores</button>
         </header>
 
         <div id="game-table">
@@ -74,14 +74,13 @@
         </div>
     </div>
 
-    <div id="orientation-warning">
-        <div class="warning-icon">🔄</div>
-        <h2>Pivotez votre smartphone</h2>
-        <p>Le tapis de jeu nécessite d'être affiché à l'horizontal (mode paysage) pour s'installer correctement.</p>
-    </div>
-
     <script src="engine.js"></script>
     <script src="ai.js"></script>
     <script src="game.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            window.game = new RikikiGame();
+        });
+    </script>
 </body>
 </html>
