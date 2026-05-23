@@ -2,20 +2,19 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rikiki - Le Jeu Complet</title>
     <link rel="stylesheet" href="style.css">
+    <base target="_blank">
 </head>
 <body>
 
+    <!-- ÉCRAN D'ACCUEIL -->
     <div id="setup-screen" class="screen">
-        
         <div class="main-logo-container">
             <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki Game Logo" class="main-logo">
         </div>
-
         <h1>Configuration</h1>
-        
         <div class="setup-box">
             <label for="player-count">Nombre de joueurs (3 à 7) :</label>
             <select id="player-count">
@@ -25,47 +24,83 @@
                 <option value="6">6 Joueurs</option>
                 <option value="7">7 Joueurs</option>
             </select>
-
             <div id="players-input-container"></div>
-
             <button id="start-game-btn">Lancer la partie</button>
         </div>
     </div>
 
+    <!-- ÉCRAN DE JEU -->
     <div id="game-screen" class="screen hidden">
+
+        <!-- Bannière manche aveugle -->
+        <div id="blind-banner" class="hidden"></div>
+
+        <!-- Header -->
         <header class="game-header">
-            <div class="header-logo-container">
-                <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki Game" class="header-logo">
+            <div class="header-left">
+                <img src="https://i.ibb.co/DHgzPgLh/Rikiki-Game-Logo.png" alt="Rikiki" class="header-logo">
             </div>
-            <div id="game-header-infos">
-                <div id="info-manche">Manche : <span id="current-round">-</span></div>
-                <div id="info-atout">Atout : <span id="current-trump">-</span></div>
-                <div id="info-statut">En attente...</div>
+            <div class="header-center">
+                <div class="header-manche">Manche: <span id="current-round">-</span></div>
+                <div class="header-atout">Atout: <span id="current-trump">-</span></div>
             </div>
-            <button id="toggle-score-btn">Scores</button>
+            <div class="header-right">
+                <button id="toggle-score-btn" class="icon-btn">📊</button>
+            </div>
         </header>
 
+        <!-- Zone de jeu principale -->
         <div id="game-table">
+            <!-- Atout indicator (coin droit) -->
+            <div id="atout-display" class="hidden">
+                <div class="atout-label">Atout</div>
+                <div id="atout-card" class="atout-card"></div>
+            </div>
+
+            <!-- Conteneur des adversaires -->
             <div id="opponents-container"></div>
+
+            <!-- Centre de la table (cartes jouées) -->
             <div id="table-center">
                 <div id="played-cards"></div>
             </div>
+
+            <!-- Logo watermark au centre -->
+            <div class="table-watermark">Rikiki Game</div>
         </div>
 
+        <!-- Zone d'annonces (humain) -->
         <div id="bid-action-zone" class="hidden">
-            <p>Faites votre annonce :</p>
-            <div id="bid-buttons"></div>
+            <div class="bid-bubble">
+                <p class="bid-title">Votre annonce</p>
+                <div id="bid-buttons"></div>
+                <p class="bid-hint">Rikiki Game V1.0.1 | @MaPetiteApp</p>
+            </div>
         </div>
 
-        <div id="human-player-zone" class="human-player-area">
-            <div id="human-info">
-                <span id="human-name">Bruno</span>
-                <span id="human-status">Annonce : - | Plis : 0</span>
+        <!-- Zone joueur humain -->
+        <div id="human-player-zone">
+            <div class="human-info-bar">
+                <div class="human-avatar">👤</div>
+                <div class="human-details">
+                    <span id="human-name" class="human-name">Bruno</span>
+                    <span id="human-status" class="human-status">Annonce : ? | Plis : 0</span>
+                </div>
+                <div class="human-score-badge">
+                    <span id="human-score">0</span>
+                    <span class="score-label">pts</span>
+                </div>
             </div>
             <div id="human-hand" class="hand-container"></div>
         </div>
+
+        <!-- Status ticker bottom -->
+        <div id="bottom-status-ticker">
+            <span id="info-statut">En attente...</span>
+        </div>
     </div>
 
+    <!-- Modal Scores -->
     <div id="score-modal" class="modal hidden">
         <div class="modal-content">
             <span id="close-score-btn" class="close">&times;</span>
@@ -73,11 +108,11 @@
             <div id="score-table-container"></div>
         </div>
     </div>
-
     <script src="engine.js"></script>
     <script src="ai.js"></script>
     <script src="game.js"></script>
     <script>
+        // Initialisation unique ici — game.js ne contient plus de DOMContentLoaded
         window.addEventListener('DOMContentLoaded', () => {
             window.game = new RikikiGame();
         });
