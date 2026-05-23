@@ -34,7 +34,7 @@ class Card {
             cardDiv.classList.remove('card-back');
         } else {
             // DOS DE LA CARTE : On applique directement l'image locale via le script
-            cardDiv.style.backgroundImage = "url('cartes/BACK.svg')";
+            cardDiv.style.backgroundImage = "url('cartes/BACK.png')";
             cardDiv.classList.add('card-back');
         }
 
