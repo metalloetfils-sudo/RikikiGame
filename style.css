@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RIKIKI GAME - DESIGN GLOBAL & ENGINE VISUEL (style.css)
+   RIKIKI GAME - MOBILE-FIRST DESIGN (style.css)
    ========================================================================== */
 
 * {
@@ -8,25 +8,34 @@
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 :root {
-    --bg-dark: #121212;
-    --table-green-light: #1a5e3a;
+    --bg-dark: #0a1628;
+    --table-green: #1a5c3a;
     --table-green-dark: #0d3b24;
-    --felt-border: #d4af37;
-    --card-width: 80px;
-    --card-height: 120px;
+    --felt-border: #c9a227;
+    --felt-border-dark: #8b6914;
+    --gold-light: #f1c40f;
+    --gold-dark: #d4af37;
+    --card-width: 65px;
+    --card-height: 95px;
+    --card-width-mobile: 62px;
+    --card-height-mobile: 90px;
     --text-light: #ffffff;
     --text-red: #e53935;
     --text-black: #212121;
+    --bot-bg: rgba(0, 0, 0, 0.75);
+    --bubble-bg: linear-gradient(135deg, #d4af37, #b8860b);
+    --blind-color: #c0392b;
 }
 
 body {
     background-color: var(--bg-dark);
     color: var(--text-light);
     min-height: 100vh;
-    overflow-y: auto; 
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,46 +51,69 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
+}
+
+/* --- BANNIÈRE MANCHE AVEUGLE --- */
+#blind-banner {
+    background: linear-gradient(135deg, #7b241c, #922b21);
+    border-bottom: 2px solid #e74c3c;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 6px 12px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+    z-index: 90;
+    animation: pulse-blind 2s infinite;
+}
+
+@keyframes pulse-blind {
+    0%, 100% { background: linear-gradient(135deg, #7b241c, #922b21); }
+    50%       { background: linear-gradient(135deg, #a93226, #c0392b); }
 }
 
 /* --- ÉCRAN D'ACCUEIL --- */
 #setup-screen {
     justify-content: flex-start;
     align-items: center;
-    background: radial-gradient(circle, #2c3e50, #0f171e);
-    padding: 40px 20px;
+    background: radial-gradient(circle, #1a2a3a, #0a1628);
+    padding: 30px 20px;
     overflow-y: auto;
 }
 
 .main-logo-container {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     width: 100%;
 }
 
 .main-logo {
-    max-width: 280px;
+    max-width: 220px;
     width: 100%;
     height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.3));
+    filter: drop-shadow(0 0 15px rgba(201, 162, 39, 0.4));
 }
 
 #setup-screen h1 {
-    font-size: 2rem;
+    font-size: 1.6rem;
     margin-bottom: 20px;
     text-shadow: 0 4px 10px rgba(0,0,0,0.5);
     letter-spacing: 2px;
     text-align: center;
+    color: var(--gold-light);
 }
 
 .setup-box {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 30px;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    padding: 25px;
     border-radius: 15px;
-    width: 400px;
+    width: 100%;
+    max-width: 380px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -89,109 +121,182 @@ body {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
+    color: var(--gold-light);
 }
 
 .setup-box select, .setup-box input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: #ffffff;
-    color: #000000;
+    border-radius: 10px;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    background: rgba(0, 0, 0, 0.4);
+    color: #ffffff;
     font-size: 1rem;
 }
 
-.setup-box button, #toggle-score-btn, .bid-btn, #next-round-action-btn {
-    padding: 12px;
-    background: linear-gradient(135deg, #f39c12, #d35400);
+.setup-box select option {
+    background: #1a2a3a;
+    color: #fff;
+}
+
+.setup-box button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--gold-light), #d35400);
     border: none;
     color: white;
     font-weight: bold;
     font-size: 1.1rem;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.setup-box button:hover, #next-round-action-btn:hover {
+.setup-box button:hover, .setup-box button:active {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+    box-shadow: 0 5px 20px rgba(241, 196, 15, 0.4);
 }
 
-/* --- INTERFACE DE JEU EN COURS --- */
+/* --- INTERFACE DE JEU MOBILE --- */
 #game-screen {
-    background-color: #1e1e1e;
+    background: linear-gradient(180deg, #0a1628 0%, #1a3a2a 50%, #0a1628 100%);
+    display: flex;
+    flex-direction: column;
 }
 
+/* Header compact */
 .game-header {
-    height: 70px;
-    background: linear-gradient(to bottom, #161f27, #0b0f12);
+    height: 40px;
+    background: linear-gradient(to bottom, #0d1b2a, #0a1628);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    border-bottom: 3px solid var(--felt-border);
-    z-index: 10;
-    width: 100%;
+    padding: 0 12px;
+    border-bottom: 2px solid var(--felt-border);
+    z-index: 100;
+    flex-shrink: 0;
 }
 
-.header-logo-container {
-    display: flex;
-    align-items: center;
-}
+.header-left { display: flex; align-items: center; }
 
 .header-logo {
-    height: 48px;
+    height: 36px;
     width: auto;
+    filter: drop-shadow(0 0 5px rgba(201, 162, 39, 0.3));
 }
 
-#game-header-infos {
+.header-center {
     display: flex;
-    gap: 30px;
+    flex-direction: column;
     align-items: center;
+    gap: 2px;
 }
 
-#info-manche, #info-atout, #current-round {
-    font-size: 1.1rem;
+.header-manche, .header-atout {
+    font-size: 0.8rem;
     font-weight: bold;
-    color: #ffffff !important;
+    color: var(--gold-light);
 }
 
-#info-statut {
-    color: #f39c12 !important;
-    font-weight: bold;
+.header-atout {
+    font-size: 0.75rem;
+    color: #bdc3c7;
+}
+
+.header-right { display: flex; align-items: center; }
+
+.icon-btn {
+    background: rgba(201, 162, 39, 0.2);
+    border: 1px solid var(--felt-border);
+    color: var(--gold-light);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#toggle-score-btn {
-    width: auto;
-    padding: 6px 15px;
-    font-size: 0.9rem;
-}
-
+/* Table de jeu */
 #game-table {
     flex: 1;
     position: relative;
-    margin: 10px auto;
-    width: 80vh;
-    height: 50vh;
-    max-width: 800px;
-    max-height: 460px;
-    background: radial-gradient(circle, var(--table-green-light), var(--table-green-dark));
-    border: 12px solid #5c3a21;
-    border-radius: 50%;
-    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 15px 35px rgba(0,0,0,0.6);
+    /* Laisse 70px à droite pour l'atout fixe + 6px marges latérales */
+    margin: 4px auto 4px 6px;
+    width: calc(100% - 76px);
+    background: radial-gradient(ellipse at center, var(--table-green), var(--table-green-dark));
+    border: 6px solid var(--felt-border);
+    border-radius: 50% / 40%;
+    box-shadow:
+        inset 0 0 60px rgba(0,0,0,0.6),
+        0 10px 30px rgba(0,0,0,0.5),
+        inset 0 0 0 2px rgba(201, 162, 39, 0.3);
+    overflow: visible;
+    min-height: 180px;
 }
 
+/* Watermark Rikiki au centre */
+.table-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+/* Atout display - fixé à droite de l'écran, hors de la table */
+#atout-display {
+    position: fixed;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.92);
+    border: 2px solid var(--felt-border);
+    border-radius: 8px;
+    padding: 5px 4px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+}
+
+.atout-label {
+    font-size: 0.55rem;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    letter-spacing: 0.5px;
+}
+
+.atout-card {
+    width: 44px;
+    height: 64px;
+    background: white;
+    border-radius: 5px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+}
+
+/* Centre de table pour cartes jouées */
 #table-center {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 45%;
+    width: 55%;
     height: 45%;
-    border: 1px dashed rgba(255,255,255,0.2);
     border-radius: 50%;
 }
 
@@ -201,266 +306,662 @@ body {
     height: 100%;
 }
 
-#played-cards .card {
+/* ─── SLOTS ADVERSAIRES ─────────────────────────────────────────────────────── */
+#opponents-container {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: calc(var(--card-height) / -2);
-    margin-left: calc(var(--card-width) / -2);
-    transition: all 0.3s ease-in-out;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
 }
-
-/* Positions des plis joueurs */
-.card-pos-0 { transform: translateY(40px) rotate(0deg); z-index: 10; }
-.card-pos-1 { transform: translateX(-50px) rotate(-15deg); z-index: 11; }
-.card-pos-2 { transform: translateY(-40px) rotate(5deg); z-index: 12; }
-.card-pos-3 { transform: translateX(50px) rotate(15deg); z-index: 13; }
 
 .opponent-slot {
     position: absolute;
-    width: 140px;
-    height: 95px;
-    background: rgba(0,0,0,0.75);
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 6px;
-    text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: center;
     transform: translate(-50%, -50%);
+    pointer-events: auto;
+    width: 100px;
 }
 
-.opponent-slot.active-turn {
-    border-color: #f1c40f;
-    box-shadow: 0 0 15px #f1c40f;
+/* En manche aveugle : le slot s'adapte à la largeur des vraies cartes */
+.opponent-slot:has(.blind-visible) {
+    width: 160px;
+    z-index: 20;
+}
+
+/* Bulle d'annonce : annonce | plis remportés */
+.opponent-bid-bubble {
+    background: var(--bubble-bg);
+    border: 2px solid #8b6914;
+    border-radius: 20px;
+    padding: 6px 14px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    z-index: 100;
+    font-weight: bold;
+    color: #1a1a1a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    position: relative;
+}
+
+.opponent-bid-bubble.pending {
+    opacity: 0.6;
+    background: rgba(100,100,100,0.6);
+    color: #fff;
+    border-color: #555;
+}
+
+.opponent-bid-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #b8860b;
+}
+
+.opponent-bid-bubble.pending::after {
+    border-top-color: #555;
+}
+
+/* Avatar adversaire */
+.opponent-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    border: 2px solid var(--felt-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+/* Badge score vert */
+.opponent-score-badge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Nom et infos adversaire */
+.opponent-info {
+    background: rgba(0, 0, 0, 0.82);
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    border-radius: 7px;
+    padding: 2px 7px;
+    margin-top: 2px;
+    text-align: center;
+    max-width: 105px;
 }
 
 .opponent-name {
     font-weight: bold;
-    font-size: 0.85rem;
-    color: #f39c12;
+    font-size: 0.7rem;
+    color: var(--gold-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
 }
 
-.opponent-status {
-    font-size: 0.75rem;
+.opponent-tricks {
+    font-size: 0.62rem;
     color: #bdc3c7;
 }
 
-.opponent-cards-artificiel {
+/* Mini cartes adversaire — mode normal (dos) */
+.opponent-cards-row {
     display: flex;
     justify-content: center;
-    gap: -10px;
-    height: 25px;
+    margin-top: 4px;
+    height: auto;
+    max-width: none;
+    flex-wrap: nowrap;
+    overflow: visible;
 }
 
+/* Fallback — tailles gérées en inline JS via getSlotScale */
 .opponent-mini-card {
-    width: 16px;
-    height: 24px;
-    background-color: #c0392b;
+    width: 22px;
+    height: 32px;
+    background-color: #2c3e50;
+    background-image: url('cartes/BACK.svg');
+    background-size: cover;
     border: 1px solid white;
-    border-radius: 2px;
+    border-radius: 3px;
+    margin-left: -5px;
+    flex-shrink: 0;
 }
 
+.opponent-mini-card:first-child {
+    margin-left: 0;
+}
+
+/* Mini cartes adversaire — mode aveugle (face visible) */
+.blind-visible {
+    height: auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+/* Carte adversaire en manche aveugle : taille intermédiaire lisible */
+.blind-card {
+    width: 32px;
+    height: 46px;
+    background-color: white;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+    border: 1px solid #ccc;
+}
+
+.opponent-mini-card.visible {
+    width: 18px;
+    height: 26px;
+    background-color: white;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-left: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* Indicateur tour actif */
+.opponent-slot.active-turn .opponent-avatar {
+    box-shadow: 0 0 15px var(--gold-light), 0 0 30px rgba(241, 196, 15, 0.3);
+    border-color: var(--gold-light);
+    animation: bounce-avatar 0.6s ease infinite alternate;
+}
+
+@keyframes bounce-avatar {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-3px); }
+}
+
+.opponent-slot.active-turn .opponent-bid-bubble {
+    animation: pulse-bubble 1.5s infinite;
+}
+
+@keyframes pulse-bubble {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.05); }
+}
+
+/* --- CARTES JOUÉES SUR LA TABLE --- */
+#played-cards .card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--card-width-mobile);
+    height: var(--card-height-mobile);
+    transition: all 0.3s ease-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.played-card-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.58rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* --- ZONE JOUEUR HUMAIN (Bottom) --- */
 #human-player-zone {
-    height: 180px;
-    background: linear-gradient(to top, #0b0f12, #161f27);
-    border-top: 3px solid var(--felt-border);
+    background: linear-gradient(to top, #0a1628, #0d1b2a);
+    border-top: 2px solid var(--felt-border);
+    padding: 5px 10px 4px;
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.human-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    padding: 0 5px;
+}
+
+.human-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: 2px solid var(--gold-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.human-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.human-name {
+    font-weight: bold;
+    color: var(--gold-light);
+    font-size: 0.9rem;
+}
+
+.human-status {
+    font-size: 0.72rem;
+    color: #bdc3c7;
+}
+
+.human-score-badge {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
-    z-index: 5;
-    width: 100%;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    flex-shrink: 0;
 }
 
-#human-info {
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-}
-
-#human-name {
+.human-score-badge #human-score {
+    font-size: 0.95rem;
     font-weight: bold;
-    color: #3498db;
-    margin-right: 15px;
+    color: white;
+    line-height: 1;
 }
 
+.human-score-badge .score-label {
+    font-size: 0.52rem;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+}
+
+/* Main du joueur */
 .hand-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 5px;
     width: 100%;
     overflow-x: auto;
-    padding-bottom: 5px;
+    padding: 4px 0;
+    scrollbar-width: none;
 }
 
-/* --- CARTE DESIGN --- */
+.hand-container::-webkit-scrollbar { display: none; }
+
+/* --- DESIGN CARTES --- */
 .card {
-    width: var(--card-width);
-    height: var(--card-height);
+    width: var(--card-width-mobile);
+    height: var(--card-height-mobile);
     background-color: white;
     border-radius: 6px;
-    box-shadow: 2px 2px 7px rgba(0,0,0,0.4);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
     position: relative;
     background-size: cover;
     background-position: center;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
 }
 
-.card:hover {
-    transform: translateY(-10px);
+.card:hover, .card:active {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
-.card-back { 
-    background-color: #2c3e50; 
-    border: 2px solid white; 
-    background-image: url('cartes/BACK.svg'); 
+.card-back {
+    background-color: #2c3e50;
+    border: 2px solid white;
+    background-image: url('cartes/BACK.svg');
     background-size: cover;
     background-position: center;
 }
 
+/* Carte aveugle du joueur humain — légère teinte rouge pour signaler la règle */
+.blind-own-card {
+    opacity: 0.85;
+    border: 2px solid #e74c3c !important;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.4) !important;
+    cursor: default;
+}
+
+.blind-own-card:hover {
+    transform: none !important;
+}
+
+/* --- ZONE D'ANNONCES (Style premium doré) --- */
 #bid-action-zone {
     position: absolute;
-    bottom: 190px;
+    bottom: 185px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(30, 39, 46, 0.95);
-    padding: 15px;
-    border-radius: 12px;
-    border: 2px solid #f1c40f;
-    z-index: 100;
+    z-index: 200;
+    width: 92%;
+    max-width: 340px;
+}
+
+.bid-bubble {
+    background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20, 20, 30, 0.95));
+    border: 2px solid var(--gold-light);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 20px rgba(241, 196, 15, 0.1);
     text-align: center;
+}
+
+.bid-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--gold-light);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 #bid-buttons {
     display: flex;
-    gap: 8px;
-    margin-top: 10px;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
 }
 
 .bid-btn {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(135deg, #5c3a21, #3d2616);
+    border: 2px solid var(--gold-light);
+    color: var(--gold-light);
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-/* --- MODAL DE SCORE NETTOYÉ & SCROLLABLE --- */
+.bid-btn:hover, .bid-btn:active {
+    background: linear-gradient(135deg, var(--gold-light), #d35400);
+    color: #1a1a1a;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+}
+
+.bid-btn.disabled {
+    background: #3d1d1d !important;
+    color: #721c24 !important;
+    border-color: #721c24 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.bid-hint {
+    font-size: 0.68rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* Indice spécial manche aveugle dans les boutons d'annonce */
+.blind-forced {
+    color: #e74c3c !important;
+    font-style: normal !important;
+    font-weight: bold;
+    font-size: 0.75rem !important;
+}
+
+/* --- BOTTOM STATUS TICKER --- */
+#bottom-status-ticker {
+    background: linear-gradient(to top, #0a1628, #0d1b2a);
+    border-top: 1px solid rgba(201, 162, 39, 0.2);
+    padding: 3px 15px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--gold-light);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* --- MODAL SCORES --- */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 200;
+    z-index: 300;
+    padding: 20px;
 }
 
 .modal-content {
-    background: #1e272e;
-    padding: 25px;
-    padding-bottom: 35px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 650px;
-    max-height: 85vh;
+    background: linear-gradient(135deg, #1a252f, #0d1b2a);
+    padding: 20px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 82vh;
     overflow-y: auto;
     border: 2px solid var(--felt-border);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
     position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    -webkit-overflow-scrolling: touch;
+}
+
+.modal-content h2 {
+    text-align: center;
+    color: var(--gold-light);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
 }
 
 .close {
     position: absolute;
     top: 10px;
     right: 15px;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    color: var(--gold-light);
     cursor: pointer;
+    line-height: 1;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
-    margin-bottom: 20px; 
+    margin-top: 10px;
+    font-size: 0.82rem;
 }
 
 th, td {
     border: 1px solid #34495e;
-    padding: 8px;
+    padding: 5px;
     text-align: center;
 }
 
-th { background-color: #2c3e50; }
-.current-row-highlight { background-color: rgba(241, 196, 15, 0.2); }
+th {
+    background-color: rgba(201, 162, 39, 0.2);
+    color: var(--gold-light);
+    font-weight: bold;
+}
 
-.trump-red { color: #ff0000 !important; font-weight: bold; }
+tr:nth-child(even) {
+    background-color: rgba(255,255,255,0.03);
+}
+
+.current-row-highlight {
+    background-color: rgba(241, 196, 15, 0.15) !important;
+}
+
+.trump-red   { color: #ff4444 !important; font-weight: bold; }
 .trump-black { color: #ffffff !important; font-weight: bold; }
 
-/* --- BRANDING COPYRIGHTS --- */
-.app-copyright {
+/* Avertissement manche aveugle dans la modal */
+.blind-next-warning {
     text-align: center;
-    color: rgba(255, 255, 255, 0.4);
-    font-size: 10px;
-    margin-top: 20px;
-    line-height: 1.5;
-}
-.app-copyright a { color: #555; text-decoration: none; }
-
-.table-copyright {
-    position: absolute;
-    right: -110px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.15);
-    font-size: 10px;
+    color: #e74c3c;
     font-weight: bold;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    pointer-events: none;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    padding: 8px;
+    border: 1px solid #922b21;
+    border-radius: 8px;
+    background: rgba(146, 43, 33, 0.15);
 }
 
-/* --- MOBILE RESPONSIVE --- */
-@media (max-width: 768px) {
-    .main-logo { max-width: 240px; }
-    .game-header { height: 55px; padding: 0 10px; }
-    .header-logo { height: 32px; }
-    #game-header-infos { gap: 15px; }
-    #info-manche, #info-atout, #current-round { font-size: 0.9rem; }
-    #info-statut { font-size: 0.95rem; }
-    .table-copyright {
-        right: auto;
-        left: 50%;
-        top: calc(50% + 55px);
-        transform: translateX(-50%);
+/* Boutons dans modal */
+.modal-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, var(--gold-light), #d35400);
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.modal-btn.secondary {
+    background: linear-gradient(135deg, #2980b9, #1a5276);
+    margin-top: 8px;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.card-played-anim {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* --- RESPONSIVE TABLETTE --- */
+@media (min-width: 768px) {
+    .bid-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
     }
 }
 
-/* --- GESTION EXCLUSIVE DE LA ROTATION SMARTPHONE --- */
-body.force-landscape-warning:after {
-    content: "🔄 Veuillez pivoter votre smartphone en mode Paysage pour jouer à Rikiki.";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle, #1a252f, #0c1013);
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 30px;
-    font-size: 1.3rem;
+/* --- LANDSCAPE MOBILE --- */
+@media (max-height: 500px) and (orientation: landscape) {
+    #game-table { margin: 3px auto; }
+    #human-player-zone { padding: 4px; }
+    .hand-container { gap: 3px; }
+    .card {
+        width: 46px;
+        height: 67px;
+    }
+    #blind-banner { font-size: 0.7rem; padding: 4px 8px; }
+}
+
+/* --- BULLES BOTS --- */
+.opponent-bid-bubble {
+    z-index: 100;
+    margin-top: 10px;
+    padding: 8px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    background: linear-gradient(135deg, #f1c40f, #d4ac0d);
+    color: black;
     font-weight: bold;
-    z-index: 9999;
-    letter-spacing: 0.5px;
-    box-sizing: border-box;
+    border-radius: 12px;
+}
+
+/* --- CLASSE POUR CARTES ADVERSAIRES AGRANDIES --- */
+.big-opponent-cards .card {
+    width: var(--card-width) !important;
+    height: var(--card-height) !important;
+    margin: 2px !important;
+}
+
+/* --- VERSION FOOTER --- */
+#version-tag {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 1000;
+}
+/* --- RESPONSIVE DESKTOP (grands écrans) --- */
+@media (min-width: 768px) {
+    :root {
+        --card-width-mobile: 72px;
+        --card-height-mobile: 104px;
+    }
+    /* La table prend toute la largeur disponible sauf l'atout */
+    #game-table {
+        margin: 4px auto 4px 8px;
+        width: calc(100% - 82px);
+    }
+    /* Atout un peu plus grand sur grand écran */
+    .atout-card {
+        width: 50px;
+        height: 72px;
+    }
+    /* Header logo légèrement plus grand */
+    .header-logo { height: 30px; }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --card-width-mobile: 78px;
+        --card-height-mobile: 113px;
+    }
 }
