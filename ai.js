@@ -3,8 +3,11 @@
  */
 
 class RikikiAI {
-    
-    static calculateBid(hand, trumpSuit, allPlayers, botIndex, dealerIndex, cardCount) {
+
+    static calculateBid(hand, trumpSuit, allPlayers, botIndex, dealerIndex, cardCount, isBlindRound) {
+        // MANCHE AVEUGLE : le bot ne sait pas ce qu'il a, annonce 0
+        if (isBlindRound) return 0;
+
         if (!hand || hand.length === 0) return 0;
         let estimatedTricks = 0;
         const suitCounts = { 'H': 0, 'D': 0, 'C': 0, 'S': 0 };
@@ -26,7 +29,7 @@ class RikikiAI {
         let finalBid = Math.round(estimatedTricks);
         finalBid = Math.min(finalBid, hand.length);
 
-        // REGLE DU DONNEUR INTERDIT : Sécurisée pour éviter les crashs si les infos manquent
+        // REGLE DU DONNEUR INTERDIT
         if (allPlayers && botIndex !== undefined && dealerIndex !== undefined && botIndex === dealerIndex) {
             let sumOfOtherBids = 0;
             allPlayers.forEach(p => {
@@ -34,7 +37,6 @@ class RikikiAI {
                     sumOfOtherBids += p.currentBid;
                 }
             });
-
             const forbiddenBid = cardCount - sumOfOtherBids;
             if (finalBid === forbiddenBid) {
                 if (finalBid === hand.length) {
@@ -53,12 +55,17 @@ class RikikiAI {
         const ledSuit = trickCards[0].card.suit;
         const matchingCards = hand.filter(card => card.suit === ledSuit);
         if (matchingCards.length > 0) return matchingCards;
-        return hand; 
+        return hand;
     }
 
-    static chooseCardToPlay(hand, trickCards, trumpSuit, tricksWon, currentBid) {
+    static chooseCardToPlay(hand, trickCards, trumpSuit, tricksWon, currentBid, isBlindRound) {
         const playableCards = this.getValidPlayableCards(hand, trickCards);
         if (playableCards.length === 1) return playableCards[0];
+
+        // MANCHE AVEUGLE : joue une carte aléatoire parmi les jouables
+        if (isBlindRound) {
+            return playableCards[Math.floor(Math.random() * playableCards.length)];
+        }
 
         const wantsToWin = (tricksWon < currentBid);
 
@@ -83,9 +90,9 @@ class RikikiAI {
                 return determineTrickWinner(testTable, trumpSuit).player.id !== 'temp_bot';
             });
             if (losingCards.length > 0) {
-                return this.getHighestValueCard(losingCards, trumpSuit); 
+                return this.getHighestValueCard(losingCards, trumpSuit);
             }
-            return this.getLowestValueCard(playableCards, trumpSuit); 
+            return this.getLowestValueCard(playableCards, trumpSuit);
         }
     }
 
